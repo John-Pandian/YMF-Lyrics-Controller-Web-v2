@@ -26,7 +26,7 @@ const capitalizeWords = (text) => {
 };
 
 // LyricsControlBar Component
-const LyricsControlBar = ({ onSettingsChange }) => {
+const LyricsControlBar = ({ onSettingsChange, darkMode, setDarkMode }) => {
   const [liveStatus, setLiveStatus] = useState(false);
   const [alignment, setAlignment] = useState('top-bottom');
   const [visibleLangs, setVisibleLangs] = useState(['tamil', 'hindi', 'english']);
@@ -109,6 +109,16 @@ const LyricsControlBar = ({ onSettingsChange }) => {
 
   return (
     <div className="lyrics-control-bar">
+      <div className="control-section theme-toggle">
+        <button
+          className="dark-mode-toggle"
+          onClick={() => setDarkMode(!darkMode)}
+          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        >
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+      </div>
+
       <div className="control-section languages">
         <h3>🌐 Language Settings</h3>
         <div className="language-controls">
@@ -543,10 +553,10 @@ const LyricsPreviewControl = ({ selectedLyrics }) => {
 };
 
 // Controller Page Component
-const ControllerPage = ({ selectedLyrics, setSelectedLyrics }) => {
+const ControllerPage = ({ selectedLyrics, setSelectedLyrics, darkMode, setDarkMode }) => {
   return (
     <div className="controller-page">
-      <LyricsControlBar />
+      <LyricsControlBar darkMode={darkMode} setDarkMode={setDarkMode} />
       <div className="controller-main">
         <LyricsList
           onSelectLyrics={setSelectedLyrics}
@@ -689,9 +699,25 @@ const LiveLyricsBlock = () => {
 function App() {
   const [currentView, setCurrentView] = useState('controller');
   const [selectedLyrics, setSelectedLyrics] = useState(null);
+  const [darkMode, setDarkMode] = useState(() => {
+    // Load dark mode preference from localStorage
+    const savedMode = localStorage.getItem('darkMode');
+    return savedMode === 'true';
+  });
 
   // Check if we're on the /live route
   const isLiveRoute = window.location.pathname === '/live';
+
+  // Apply dark mode class to body
+  useEffect(() => {
+    if (darkMode) {
+      document.body.classList.add('dark-mode');
+    } else {
+      document.body.classList.remove('dark-mode');
+    }
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   // Sync selected lyrics with Firebase on mount and when preview changes
   useEffect(() => {
@@ -738,6 +764,8 @@ function App() {
       <ControllerPage
         selectedLyrics={selectedLyrics}
         setSelectedLyrics={setSelectedLyrics}
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
       />
     </div>
   );
