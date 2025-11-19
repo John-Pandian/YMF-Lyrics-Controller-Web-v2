@@ -48,7 +48,8 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
       alignment: 'top-bottom',
       autoCapitalize: true,
       showSongNumbers: true,
-      showAlternativeTitle: true
+      showAlternativeTitle: true,
+      previewLanguage: 'english'
     };
     setLocalSettings(defaultSettings);
   };
@@ -113,48 +114,221 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
             </div>
 
             <div className="setting-item">
-              <label>
-                <span>Tamil font size:</span>
-                <input
-                  type="range"
-                  min="12"
-                  max="48"
-                  value={localSettings.tamilFontSize || 20}
-                  onChange={(e) => setLocalSettings({...localSettings, tamilFontSize: parseInt(e.target.value)})}
-                  style={{marginLeft: '12px', width: '150px'}}
-                />
-                <span style={{marginLeft: '8px'}}>{localSettings.tamilFontSize || 20}px</span>
-              </label>
-            </div>
+              <span style={{display: 'block', marginBottom: '12px', fontWeight: '500'}}>Font Sizes</span>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>தமிழ்</span>
+                  <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, tamilFontSize: 16})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.tamilFontSize === 16 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.tamilFontSize === 16 ? '#4a5568' : 'transparent',
+                        color: localSettings.tamilFontSize === 16 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      S
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, tamilFontSize: 20})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.tamilFontSize === 20 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.tamilFontSize === 20 ? '#4a5568' : 'transparent',
+                        color: localSettings.tamilFontSize === 20 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      M
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, tamilFontSize: 26})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.tamilFontSize === 26 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.tamilFontSize === 26 ? '#4a5568' : 'transparent',
+                        color: localSettings.tamilFontSize === 26 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      L
+                    </button>
+                    <span style={{margin: '0 8px', color: '#9ca3af'}}>|</span>
+                    <input
+                      type="number"
+                      min="10"
+                      max="48"
+                      value={localSettings.tamilFontSize || 20}
+                      onChange={(e) => setLocalSettings({...localSettings, tamilFontSize: parseInt(e.target.value) || 20})}
+                      style={{
+                        width: '50px',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        textAlign: 'center'
+                      }}
+                    />
+                    <span style={{fontSize: '12px', color: '#6b7280'}}>px</span>
+                  </div>
+                </div>
 
-            <div className="setting-item">
-              <label>
-                <span>Hindi font size:</span>
-                <input
-                  type="range"
-                  min="12"
-                  max="48"
-                  value={localSettings.hindiFontSize || 20}
-                  onChange={(e) => setLocalSettings({...localSettings, hindiFontSize: parseInt(e.target.value)})}
-                  style={{marginLeft: '12px', width: '150px'}}
-                />
-                <span style={{marginLeft: '8px'}}>{localSettings.hindiFontSize || 20}px</span>
-              </label>
-            </div>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>हिन्दी</span>
+                  <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, hindiFontSize: 16})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.hindiFontSize === 16 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.hindiFontSize === 16 ? '#4a5568' : 'transparent',
+                        color: localSettings.hindiFontSize === 16 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      S
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, hindiFontSize: 20})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.hindiFontSize === 20 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.hindiFontSize === 20 ? '#4a5568' : 'transparent',
+                        color: localSettings.hindiFontSize === 20 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      M
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, hindiFontSize: 26})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.hindiFontSize === 26 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.hindiFontSize === 26 ? '#4a5568' : 'transparent',
+                        color: localSettings.hindiFontSize === 26 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      L
+                    </button>
+                    <span style={{margin: '0 8px', color: '#9ca3af'}}>|</span>
+                    <input
+                      type="number"
+                      min="10"
+                      max="48"
+                      value={localSettings.hindiFontSize || 20}
+                      onChange={(e) => setLocalSettings({...localSettings, hindiFontSize: parseInt(e.target.value) || 20})}
+                      style={{
+                        width: '50px',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        textAlign: 'center'
+                      }}
+                    />
+                    <span style={{fontSize: '12px', color: '#6b7280'}}>px</span>
+                  </div>
+                </div>
 
-            <div className="setting-item">
-              <label>
-                <span>English font size:</span>
-                <input
-                  type="range"
-                  min="12"
-                  max="48"
-                  value={localSettings.englishFontSize || 20}
-                  onChange={(e) => setLocalSettings({...localSettings, englishFontSize: parseInt(e.target.value)})}
-                  style={{marginLeft: '12px', width: '150px'}}
-                />
-                <span style={{marginLeft: '8px'}}>{localSettings.englishFontSize || 20}px</span>
-              </label>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>English</span>
+                  <div style={{display: 'flex', gap: '6px', alignItems: 'center'}}>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, englishFontSize: 16})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.englishFontSize === 16 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.englishFontSize === 16 ? '#4a5568' : 'transparent',
+                        color: localSettings.englishFontSize === 16 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      S
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, englishFontSize: 20})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.englishFontSize === 20 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.englishFontSize === 20 ? '#4a5568' : 'transparent',
+                        color: localSettings.englishFontSize === 20 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      M
+                    </button>
+                    <button
+                      onClick={() => setLocalSettings({...localSettings, englishFontSize: 26})}
+                      style={{
+                        padding: '6px 14px',
+                        borderRadius: '6px',
+                        border: localSettings.englishFontSize === 26 ? '1px solid #4a5568' : '1px solid #d1d5db',
+                        background: localSettings.englishFontSize === 26 ? '#4a5568' : 'transparent',
+                        color: localSettings.englishFontSize === 26 ? 'white' : '#6b7280',
+                        cursor: 'pointer',
+                        fontSize: '13px',
+                        fontWeight: '500',
+                        transition: 'all 0.2s'
+                      }}
+                    >
+                      L
+                    </button>
+                    <span style={{margin: '0 8px', color: '#9ca3af'}}>|</span>
+                    <input
+                      type="number"
+                      min="10"
+                      max="48"
+                      value={localSettings.englishFontSize || 20}
+                      onChange={(e) => setLocalSettings({...localSettings, englishFontSize: parseInt(e.target.value) || 20})}
+                      style={{
+                        width: '50px',
+                        padding: '4px 8px',
+                        borderRadius: '6px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        textAlign: 'center'
+                      }}
+                    />
+                    <span style={{fontSize: '12px', color: '#6b7280'}}>px</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -195,6 +369,20 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
                   onChange={(e) => setLocalSettings({...localSettings, showSongNumbers: e.target.checked})}
                 />
                 <span>Show song numbers in list</span>
+              </label>
+            </div>
+            <div className="setting-item">
+              <label>
+                <span>Section preview language:</span>
+                <select
+                  value={localSettings.previewLanguage || 'english'}
+                  onChange={(e) => setLocalSettings({...localSettings, previewLanguage: e.target.value})}
+                  style={{marginLeft: '12px'}}
+                >
+                  <option value="english">English (default)</option>
+                  <option value="tamil">Tamil</option>
+                  <option value="hindi">Hindi</option>
+                </select>
               </label>
             </div>
 
@@ -649,6 +837,24 @@ const LyricsPreviewControl = ({ selectedLyrics, settings, onSettingsChange }) =>
     }
   }, [settings?.visibleLanguages]);
 
+  // Add keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowLeft' && currentIndex > 0) {
+        handleSectionClick(currentIndex - 1);
+      } else if (e.key === 'ArrowRight' && currentIndex < sections.tamil.length - 1) {
+        handleSectionClick(currentIndex + 1);
+      } else if (e.key === 'Home') {
+        handleSectionClick(0);
+      } else if (e.key === 'End' && sections.tamil.length > 0) {
+        handleSectionClick(sections.tamil.length - 1);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentIndex, sections]);
+
   const toggleLanguage = (lang) => {
     let newVisibleLangs;
     if (visibleLanguages.includes(lang)) {
@@ -765,16 +971,98 @@ const LyricsPreviewControl = ({ selectedLyrics, settings, onSettingsChange }) =>
         </div>
       </div>
 
-      <div className="section-buttons">
-        {[...Array(maxSections)].map((_, index) => (
-          <button
-            key={index}
-            className={`section-button ${currentIndex === index ? 'active' : ''}`}
-            onClick={() => handleSectionClick(index)}
-          >
-            {index + 1}
-          </button>
-        ))}
+      <div className="section-navigation">
+        <button
+          className="nav-btn prev"
+          onClick={() => handleSectionClick(Math.max(0, currentIndex - 1))}
+          disabled={currentIndex === 0}
+          title="Previous (←)"
+        >
+          ‹
+        </button>
+
+        <div className="section-dots">
+          {[...Array(maxSections)].map((_, index) => {
+            // Get full preview text for hover with language preference
+            const getPreviewText = () => {
+              const tamil = sections.tamil[index] || '';
+              const hindi = sections.hindi[index] || '';
+              const english = sections.english[index] || '';
+
+              // Priority: English first, then fallback to other available languages
+              const previewLang = settings?.previewLanguage || 'english';
+
+              let preview = '';
+              let langLabel = '';
+
+              // Try preferred language first (default to English)
+              if (previewLang === 'english' && english) {
+                preview = english;
+                langLabel = 'English';
+              } else if (previewLang === 'tamil' && tamil) {
+                preview = tamil;
+                langLabel = 'Tamil';
+              } else if (previewLang === 'hindi' && hindi) {
+                preview = hindi;
+                langLabel = 'Hindi';
+              }
+              // Fallback logic if preferred language not available
+              else if (english) {
+                preview = english;
+                langLabel = 'English';
+              } else if (hindi) {
+                preview = hindi;
+                langLabel = 'Hindi';
+              } else if (tamil) {
+                preview = tamil;
+                langLabel = 'Tamil';
+              } else {
+                preview = `Section ${index + 1} - No content`;
+                langLabel = '';
+              }
+
+              return { text: preview, language: langLabel };
+            };
+
+            const previewData = getPreviewText();
+
+            return (
+              <div
+                key={index}
+                className={`dot-wrapper ${currentIndex === index ? 'active' : ''}`}
+              >
+                <button
+                  className={`section-dot ${currentIndex === index ? 'active' : ''}`}
+                  onClick={() => handleSectionClick(index)}
+                  aria-label={`Section ${index + 1}`}
+                >
+                  <span className="dot-number">{index + 1}</span>
+                </button>
+                <div className="hover-preview">
+                  <div className="preview-arrow"></div>
+                  <div className="preview-content">
+                    <div className="preview-header">
+                      Section {index + 1}
+                      {previewData.language && (
+                        <span className="preview-lang"> · {previewData.language}</span>
+                      )}
+                    </div>
+                    <div className="preview-lyrics">{previewData.text}</div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <button
+          className="nav-btn next"
+          onClick={() => handleSectionClick(Math.min(maxSections - 1, currentIndex + 1))}
+          disabled={currentIndex === maxSections - 1}
+          title="Next (→)"
+        >
+          ›
+        </button>
       </div>
 
       <div className="preview-content">
@@ -997,7 +1285,8 @@ function App() {
       alignment: 'top-bottom',
       autoCapitalize: true,
       showSongNumbers: true,
-      showAlternativeTitle: true
+      showAlternativeTitle: true,
+      previewLanguage: 'english'
     };
   });
 
