@@ -212,6 +212,8 @@ const LyricsControlBar = ({ onSettingsChange }) => {
 // LyricsList Component
 const LyricsList = ({ onSelectLyrics, selectedId }) => {
   const [lyricsList, setLyricsList] = useState([]);
+  const [filteredList, setFilteredList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newLyrics, setNewLyrics] = useState({
     title: '',
@@ -238,10 +240,26 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
         });
       });
       setLyricsList(lyrics);
+      setFilteredList(lyrics);
     });
 
     return () => unsubscribe();
   }, []);
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    const searchLower = value.toLowerCase();
+
+    if (searchLower === '') {
+      setFilteredList(lyricsList);
+    } else {
+      const filtered = lyricsList.filter(song =>
+        song.title.toLowerCase().includes(searchLower) ||
+        (song.alternativeTitle && song.alternativeTitle.toLowerCase().includes(searchLower))
+      );
+      setFilteredList(filtered);
+    }
+  };
 
   const handleAddLyrics = async () => {
     if (!newLyrics.title) {
@@ -280,25 +298,61 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
   return (
     <div className="lyrics-list">
       <div className="list-header">
-        <h3>Songs</h3>
+        <div className="header-content">
+          <h3>📚 Song Library</h3>
+          <span className="song-count">{lyricsList.length} songs</span>
+        </div>
         <button onClick={() => setShowAddDialog(true)} className="add-button">
-          + Add
+          <span className="add-icon">+</span>
+          <span className="add-text">Add Song</span>
         </button>
       </div>
 
+      <div className="list-search">
+        <input
+          type="text"
+          placeholder="🔍 Search songs..."
+          className="search-input"
+          value={searchTerm}
+          onChange={(e) => handleSearch(e.target.value)}
+        />
+      </div>
+
       <div className="songs-list">
-        {lyricsList.map((lyrics) => (
-          <div
-            key={lyrics.id}
-            className={`song-item ${selectedId === lyrics.id ? 'selected' : ''}`}
-            onClick={() => onSelectLyrics(lyrics)}
-          >
-            <div className="song-title">{lyrics.title}</div>
-            {lyrics.alternativeTitle && (
-              <div className="song-alt-title">{lyrics.alternativeTitle}</div>
-            )}
+        {lyricsList.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🎵</div>
+            <div className="empty-text">No songs yet</div>
+            <div className="empty-subtext">Click "Add Song" to get started</div>
           </div>
-        ))}
+        ) : filteredList.length === 0 ? (
+          <div className="empty-state">
+            <div className="empty-icon">🔎</div>
+            <div className="empty-text">No results found</div>
+            <div className="empty-subtext">Try a different search term</div>
+          </div>
+        ) : (
+          filteredList.map((lyrics, index) => (
+            <div
+              key={lyrics.id}
+              className={`song-item ${selectedId === lyrics.id ? 'selected' : ''}`}
+              onClick={() => onSelectLyrics(lyrics)}
+            >
+              <div className="song-number">{index + 1}</div>
+              <div className="song-content">
+                <div className="song-title">{lyrics.title}</div>
+                {lyrics.alternativeTitle && (
+                  <div className="song-alt-title">{lyrics.alternativeTitle}</div>
+                )}
+              </div>
+              <div className="song-languages">
+                {lyrics.tamil && <span className="lang-badge tamil-badge">த</span>}
+                {lyrics.hindi && <span className="lang-badge hindi-badge">हि</span>}
+                {lyrics.english && <span className="lang-badge english-badge">E</span>}
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
       {showAddDialog && (
