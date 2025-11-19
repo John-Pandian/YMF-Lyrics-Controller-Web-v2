@@ -109,28 +109,58 @@ const LyricsControlBar = ({ onSettingsChange }) => {
 
   return (
     <div className="lyrics-control-bar">
-      <div className="control-section">
-        <h3>Language Settings</h3>
+      <div className="control-section languages">
+        <h3>🌐 Language Settings</h3>
         <div className="language-controls">
-          {['tamil', 'hindi', 'english'].map(lang => (
-            <div key={lang} className="lang-control">
-              <label>
-                <input
-                  type="checkbox"
-                  checked={visibleLangs.includes(lang)}
-                  onChange={() => toggleLanguage(lang)}
-                />
-                {lang.charAt(0).toUpperCase() + lang.slice(1)}
-              </label>
-              <input
-                type="number"
-                value={lang === 'tamil' ? tamilFontSize : lang === 'hindi' ? hindiFontSize : englishFontSize}
-                onChange={(e) => handleFontSizeChange(lang, e.target.value)}
-                min="10"
-                max="100"
-                className="font-size-input"
-              />
-              <span>px</span>
+          {[
+            { id: 'tamil', label: 'தமிழ் (Tamil)', emoji: '🟦' },
+            { id: 'hindi', label: 'हिन्दी (Hindi)', emoji: '🟧' },
+            { id: 'english', label: 'English', emoji: '🟩' }
+          ].map(lang => (
+            <div key={lang.id} className={`lang-control ${visibleLangs.includes(lang.id) ? 'active' : ''}`}>
+              <div className="lang-header">
+                <label className="lang-toggle">
+                  <input
+                    type="checkbox"
+                    checked={visibleLangs.includes(lang.id)}
+                    onChange={() => toggleLanguage(lang.id)}
+                  />
+                  <span className="toggle-slider"></span>
+                  <span className="lang-label">
+                    <span className="lang-emoji">{lang.emoji}</span>
+                    {lang.label}
+                  </span>
+                </label>
+              </div>
+              <div className="font-size-control">
+                <button
+                  className="size-btn decrease"
+                  onClick={() => handleFontSizeChange(lang.id,
+                    (lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize) - 2
+                  )}
+                >
+                  −
+                </button>
+                <div className="size-display">
+                  <input
+                    type="number"
+                    value={lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize}
+                    onChange={(e) => handleFontSizeChange(lang.id, e.target.value)}
+                    min="10"
+                    max="100"
+                    className="font-size-input"
+                  />
+                  <span className="size-label">px</span>
+                </div>
+                <button
+                  className="size-btn increase"
+                  onClick={() => handleFontSizeChange(lang.id,
+                    (lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize) + 2
+                  )}
+                >
+                  +
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -160,12 +190,19 @@ const LyricsControlBar = ({ onSettingsChange }) => {
         </div>
       </div>
 
-      <div className="control-section">
+      <div className="control-section live-controls">
         <button
           className={`live-button ${liveStatus ? 'live' : 'ready'}`}
           onClick={toggleLive}
         >
-          {liveStatus ? 'STOP' : 'GO LIVE'}
+          {liveStatus ? '⏹ STOP' : '▶️ GO LIVE'}
+        </button>
+        <button
+          className="open-live-btn"
+          onClick={() => window.open('/live', '_blank')}
+          title="Open Live Display in new window"
+        >
+          📺 Open Live Display
         </button>
       </div>
     </div>
@@ -641,39 +678,13 @@ function App() {
     return <LiveLyricsBlock />;
   }
 
-  // Otherwise show the normal app with tabs
+  // Show controller page directly without navigation bar
   return (
     <div className="app-container">
-      <div className="view-switcher">
-        <button
-          className={currentView === 'controller' ? 'active' : ''}
-          onClick={() => setCurrentView('controller')}
-        >
-          Controller
-        </button>
-        <button
-          className={currentView === 'live' ? 'active' : ''}
-          onClick={() => setCurrentView('live')}
-        >
-          Live Display
-        </button>
-        <button
-          className="live-window-button"
-          onClick={() => window.open('/live', '_blank')}
-          title="Open Live Display in new window"
-        >
-          Open Live Window ↗
-        </button>
-      </div>
-
-      {currentView === 'controller' ? (
-        <ControllerPage
-          selectedLyrics={selectedLyrics}
-          setSelectedLyrics={setSelectedLyrics}
-        />
-      ) : (
-        <LiveLyricsBlock />
-      )}
+      <ControllerPage
+        selectedLyrics={selectedLyrics}
+        setSelectedLyrics={setSelectedLyrics}
+      />
     </div>
   );
 }
