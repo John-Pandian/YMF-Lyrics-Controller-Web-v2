@@ -631,13 +631,45 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
 };
 
 // LyricsPreviewControl Component
-const LyricsPreviewControl = ({ selectedLyrics }) => {
+const LyricsPreviewControl = ({ selectedLyrics, settings, onSettingsChange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [sections, setSections] = useState({
     tamil: [],
     hindi: [],
     english: []
   });
+  const [visibleLanguages, setVisibleLanguages] = useState(
+    settings?.visibleLanguages || ['tamil', 'hindi', 'english']
+  );
+
+  // Sync with settings
+  useEffect(() => {
+    if (settings?.visibleLanguages) {
+      setVisibleLanguages(settings.visibleLanguages);
+    }
+  }, [settings?.visibleLanguages]);
+
+  const toggleLanguage = (lang) => {
+    let newVisibleLangs;
+    if (visibleLanguages.includes(lang)) {
+      // Don't allow removing all languages
+      if (visibleLanguages.length === 1) return;
+      newVisibleLangs = visibleLanguages.filter(l => l !== lang);
+    } else {
+      newVisibleLangs = [...visibleLanguages, lang];
+    }
+
+    setVisibleLanguages(newVisibleLangs);
+
+    // Update settings and Firebase
+    const updatedSettings = { ...settings, visibleLanguages: newVisibleLangs };
+    onSettingsChange(updatedSettings);
+    localStorage.setItem('appSettings', JSON.stringify(updatedSettings));
+
+    // Update Firebase
+    const liveRef = ref(realtimeDb, 'live/visible_langs');
+    set(liveRef, newVisibleLangs);
+  };
 
   useEffect(() => {
     if (selectedLyrics) {
@@ -700,10 +732,38 @@ const LyricsPreviewControl = ({ selectedLyrics }) => {
 
   return (
     <div className="preview-control">
-      <h2>{selectedLyrics.title}</h2>
-      {selectedLyrics.alternativeTitle && (
-        <h3>{selectedLyrics.alternativeTitle}</h3>
-      )}
+      <div className="preview-header">
+        <div className="preview-title">
+          <h2>{selectedLyrics.title}</h2>
+          {selectedLyrics.alternativeTitle && (
+            <h3>{selectedLyrics.alternativeTitle}</h3>
+          )}
+        </div>
+
+        <div className="quick-lang-toggles">
+          <button
+            className={`quick-lang-btn ${visibleLanguages.includes('tamil') ? 'active' : ''}`}
+            onClick={() => toggleLanguage('tamil')}
+            title="Toggle Tamil"
+          >
+            த
+          </button>
+          <button
+            className={`quick-lang-btn ${visibleLanguages.includes('hindi') ? 'active' : ''}`}
+            onClick={() => toggleLanguage('hindi')}
+            title="Toggle Hindi"
+          >
+            हि
+          </button>
+          <button
+            className={`quick-lang-btn ${visibleLanguages.includes('english') ? 'active' : ''}`}
+            onClick={() => toggleLanguage('english')}
+            title="Toggle English"
+          >
+            E
+          </button>
+        </div>
+      </div>
 
       <div className="section-buttons">
         {[...Array(maxSections)].map((_, index) => (
@@ -718,30 +778,36 @@ const LyricsPreviewControl = ({ selectedLyrics }) => {
       </div>
 
       <div className="preview-content">
-        <div className="preview-section">
-          <h4>Tamil</h4>
-          <div className="preview-text">
-            {sections.tamil && sections.tamil[currentIndex]
-              ? capitalizeWords(sections.tamil[currentIndex])
-              : <span style={{color: '#999', fontStyle: 'italic'}}>No Tamil lyrics for this section</span>}
+        {visibleLanguages.includes('tamil') && (
+          <div className="preview-section">
+            <h4>Tamil</h4>
+            <div className="preview-text">
+              {sections.tamil && sections.tamil[currentIndex]
+                ? settings?.autoCapitalize ? capitalizeWords(sections.tamil[currentIndex]) : sections.tamil[currentIndex]
+                : <span style={{color: '#999', fontStyle: 'italic'}}>No Tamil lyrics for this section</span>}
+            </div>
           </div>
-        </div>
-        <div className="preview-section">
-          <h4>Hindi</h4>
-          <div className="preview-text">
-            {sections.hindi && sections.hindi[currentIndex]
-              ? capitalizeWords(sections.hindi[currentIndex])
-              : <span style={{color: '#999', fontStyle: 'italic'}}>No Hindi lyrics for this section</span>}
+        )}
+        {visibleLanguages.includes('hindi') && (
+          <div className="preview-section">
+            <h4>Hindi</h4>
+            <div className="preview-text">
+              {sections.hindi && sections.hindi[currentIndex]
+                ? settings?.autoCapitalize ? capitalizeWords(sections.hindi[currentIndex]) : sections.hindi[currentIndex]
+                : <span style={{color: '#999', fontStyle: 'italic'}}>No Hindi lyrics for this section</span>}
+            </div>
           </div>
-        </div>
-        <div className="preview-section">
-          <h4>English</h4>
-          <div className="preview-text">
-            {sections.english && sections.english[currentIndex]
-              ? capitalizeWords(sections.english[currentIndex])
-              : <span style={{color: '#999', fontStyle: 'italic'}}>No English lyrics for this section</span>}
+        )}
+        {visibleLanguages.includes('english') && (
+          <div className="preview-section">
+            <h4>English</h4>
+            <div className="preview-text">
+              {sections.english && sections.english[currentIndex]
+                ? settings?.autoCapitalize ? capitalizeWords(sections.english[currentIndex]) : sections.english[currentIndex]
+                : <span style={{color: '#999', fontStyle: 'italic'}}>No English lyrics for this section</span>}
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -768,6 +834,7 @@ const ControllerPage = ({ selectedLyrics, setSelectedLyrics, darkMode, setDarkMo
         <LyricsPreviewControl
           selectedLyrics={selectedLyrics}
           settings={settings}
+          onSettingsChange={onSettingsChange}
         />
       </div>
       <Settings
