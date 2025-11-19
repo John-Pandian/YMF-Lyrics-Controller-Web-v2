@@ -25,14 +25,213 @@ const capitalizeWords = (text) => {
   return text.replace(/\b\w/g, (l) => l.toUpperCase());
 };
 
+// Settings Component
+const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
+  const [localSettings, setLocalSettings] = useState(settings);
+
+  useEffect(() => {
+    setLocalSettings(settings);
+  }, [settings]);
+
+  const handleSave = () => {
+    onSettingsChange(localSettings);
+    localStorage.setItem('appSettings', JSON.stringify(localSettings));
+    onClose();
+  };
+
+  const handleReset = () => {
+    const defaultSettings = {
+      visibleLanguages: ['tamil', 'hindi', 'english'],
+      tamilFontSize: 20,
+      hindiFontSize: 20,
+      englishFontSize: 20,
+      alignment: 'top-bottom',
+      autoCapitalize: true,
+      showSongNumbers: true,
+      showAlternativeTitle: true
+    };
+    setLocalSettings(defaultSettings);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="settings-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="settings-header">
+          <h2>⚙️ Settings</h2>
+          <button className="close-button" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="settings-content">
+          <div className="settings-section">
+            <h3>Language Settings</h3>
+
+            <div className="setting-item">
+              <span style={{display: 'block', marginBottom: '8px'}}>Visible Languages:</span>
+              <div style={{display: 'flex', gap: '12px'}}>
+                <label style={{display: 'flex', alignItems: 'center'}}>
+                  <input
+                    type="checkbox"
+                    checked={localSettings.visibleLanguages?.includes('tamil')}
+                    onChange={(e) => {
+                      const langs = e.target.checked
+                        ? [...(localSettings.visibleLanguages || []), 'tamil']
+                        : (localSettings.visibleLanguages || []).filter(l => l !== 'tamil');
+                      setLocalSettings({...localSettings, visibleLanguages: langs});
+                    }}
+                  />
+                  <span>தமிழ் (Tamil)</span>
+                </label>
+                <label style={{display: 'flex', alignItems: 'center'}}>
+                  <input
+                    type="checkbox"
+                    checked={localSettings.visibleLanguages?.includes('hindi')}
+                    onChange={(e) => {
+                      const langs = e.target.checked
+                        ? [...(localSettings.visibleLanguages || []), 'hindi']
+                        : (localSettings.visibleLanguages || []).filter(l => l !== 'hindi');
+                      setLocalSettings({...localSettings, visibleLanguages: langs});
+                    }}
+                  />
+                  <span>हिन्दी (Hindi)</span>
+                </label>
+                <label style={{display: 'flex', alignItems: 'center'}}>
+                  <input
+                    type="checkbox"
+                    checked={localSettings.visibleLanguages?.includes('english')}
+                    onChange={(e) => {
+                      const langs = e.target.checked
+                        ? [...(localSettings.visibleLanguages || []), 'english']
+                        : (localSettings.visibleLanguages || []).filter(l => l !== 'english');
+                      setLocalSettings({...localSettings, visibleLanguages: langs});
+                    }}
+                  />
+                  <span>English</span>
+                </label>
+              </div>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <span>Tamil font size:</span>
+                <input
+                  type="range"
+                  min="12"
+                  max="48"
+                  value={localSettings.tamilFontSize || 20}
+                  onChange={(e) => setLocalSettings({...localSettings, tamilFontSize: parseInt(e.target.value)})}
+                  style={{marginLeft: '12px', width: '150px'}}
+                />
+                <span style={{marginLeft: '8px'}}>{localSettings.tamilFontSize || 20}px</span>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <span>Hindi font size:</span>
+                <input
+                  type="range"
+                  min="12"
+                  max="48"
+                  value={localSettings.hindiFontSize || 20}
+                  onChange={(e) => setLocalSettings({...localSettings, hindiFontSize: parseInt(e.target.value)})}
+                  style={{marginLeft: '12px', width: '150px'}}
+                />
+                <span style={{marginLeft: '8px'}}>{localSettings.hindiFontSize || 20}px</span>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <span>English font size:</span>
+                <input
+                  type="range"
+                  min="12"
+                  max="48"
+                  value={localSettings.englishFontSize || 20}
+                  onChange={(e) => setLocalSettings({...localSettings, englishFontSize: parseInt(e.target.value)})}
+                  style={{marginLeft: '12px', width: '150px'}}
+                />
+                <span style={{marginLeft: '8px'}}>{localSettings.englishFontSize || 20}px</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="settings-section">
+            <h3>Display Settings</h3>
+
+            <div className="setting-item">
+              <label>
+                <span>Text alignment:</span>
+                <select
+                  value={localSettings.alignment || 'top-bottom'}
+                  onChange={(e) => setLocalSettings({...localSettings, alignment: e.target.value})}
+                  style={{marginLeft: '12px'}}
+                >
+                  <option value="top-bottom">Top-Bottom</option>
+                  <option value="side-by-side">Side-by-Side</option>
+                  <option value="diagonal">Diagonal</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={localSettings.autoCapitalize}
+                  onChange={(e) => setLocalSettings({...localSettings, autoCapitalize: e.target.checked})}
+                />
+                <span>Auto-capitalize lyrics</span>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={localSettings.showSongNumbers}
+                  onChange={(e) => setLocalSettings({...localSettings, showSongNumbers: e.target.checked})}
+                />
+                <span>Show song numbers in list</span>
+              </label>
+            </div>
+
+            <div className="setting-item">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={localSettings.showAlternativeTitle}
+                  onChange={(e) => setLocalSettings({...localSettings, showAlternativeTitle: e.target.checked})}
+                />
+                <span>Show alternative titles</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div className="settings-footer">
+          <button className="reset-button" onClick={handleReset}>
+            Reset to Defaults
+          </button>
+          <div className="footer-buttons">
+            <button className="cancel-button" onClick={onClose}>
+              Cancel
+            </button>
+            <button className="save-button" onClick={handleSave}>
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // LyricsControlBar Component
-const LyricsControlBar = ({ onSettingsChange, darkMode, setDarkMode }) => {
+const LyricsControlBar = ({ darkMode, setDarkMode, onOpenSettings, settings }) => {
   const [liveStatus, setLiveStatus] = useState(false);
-  const [alignment, setAlignment] = useState('top-bottom');
-  const [visibleLangs, setVisibleLangs] = useState(['tamil', 'hindi', 'english']);
-  const [tamilFontSize, setTamilFontSize] = useState(20);
-  const [hindiFontSize, setHindiFontSize] = useState(20);
-  const [englishFontSize, setEnglishFontSize] = useState(20);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -41,11 +240,6 @@ const LyricsControlBar = ({ onSettingsChange, darkMode, setDarkMode }) => {
       const data = snapshot.val();
       if (data) {
         setLiveStatus(data.isLive || false);
-        setAlignment(data.alignment || 'top-bottom');
-        setVisibleLangs(data.visible_langs || ['tamil', 'hindi', 'english']);
-        setTamilFontSize(data.tamilfontSize || 20);
-        setHindiFontSize(data.hindifontSize || 20);
-        setEnglishFontSize(data.englishfontSize || 20);
         setCurrentIndex(data.currentIndex || 0);
       }
     });
@@ -53,174 +247,99 @@ const LyricsControlBar = ({ onSettingsChange, darkMode, setDarkMode }) => {
     return () => unsubscribe();
   }, []);
 
-  const updateLiveSettings = (updates) => {
-    const liveRef = ref(realtimeDb, 'live');
-    // Preserve currentIndex when updating other settings
-    const currentSettings = {
-      isLive: liveStatus,
-      alignment,
-      visible_langs: visibleLangs,
-      tamilfontSize: tamilFontSize,
-      hindifontSize: hindiFontSize,
-      englishfontSize: englishFontSize,
-      currentIndex: currentIndex, // Preserve the current index
-      ...updates
-    };
-    set(liveRef, currentSettings);
-    if (onSettingsChange) onSettingsChange(currentSettings);
-  };
+  // Update live settings whenever settings change
+  useEffect(() => {
+    if (settings) {
+      const liveRef = ref(realtimeDb, 'live');
+      const updates = {
+        alignment: settings.alignment || 'top-bottom',
+        visible_langs: settings.visibleLanguages || ['tamil', 'hindi', 'english'],
+        tamilfontSize: settings.tamilFontSize || 20,
+        hindifontSize: settings.hindiFontSize || 20,
+        englishfontSize: settings.englishFontSize || 20,
+        isLive: liveStatus,
+        currentIndex: currentIndex
+      };
+      set(liveRef, updates);
+    }
+  }, [settings, liveStatus, currentIndex]);
 
   const toggleLive = () => {
     const newLiveStatus = !liveStatus;
     setLiveStatus(newLiveStatus);
-    updateLiveSettings({ isLive: newLiveStatus });
-  };
-
-  const handleAlignmentChange = (newAlignment) => {
-    setAlignment(newAlignment);
-    updateLiveSettings({ alignment: newAlignment });
-  };
-
-  const toggleLanguage = (lang) => {
-    const newVisibleLangs = visibleLangs.includes(lang)
-      ? visibleLangs.filter(l => l !== lang)
-      : [...visibleLangs, lang];
-    setVisibleLangs(newVisibleLangs);
-    updateLiveSettings({ visible_langs: newVisibleLangs });
-  };
-
-  const handleFontSizeChange = (lang, size) => {
-    const newSize = parseInt(size) || 20;
-    switch(lang) {
-      case 'tamil':
-        setTamilFontSize(newSize);
-        updateLiveSettings({ tamilfontSize: newSize });
-        break;
-      case 'hindi':
-        setHindiFontSize(newSize);
-        updateLiveSettings({ hindifontSize: newSize });
-        break;
-      case 'english':
-        setEnglishFontSize(newSize);
-        updateLiveSettings({ englishfontSize: newSize });
-        break;
-    }
+    const liveRef = ref(realtimeDb, 'live/isLive');
+    set(liveRef, newLiveStatus);
   };
 
   return (
     <div className="lyrics-control-bar">
-      <div className="control-section theme-toggle">
-        <button
-          className="dark-mode-toggle"
-          onClick={() => setDarkMode(!darkMode)}
-          title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-        >
-          {darkMode ? '☀️' : '🌙'}
-        </button>
+      <div className="control-bar-left">
+        <div className="app-logo">
+          <span className="logo-icon">🎵</span>
+          <div className="logo-text">
+            <h1 className="app-name">Lyrics Control</h1>
+            <span className="app-subtitle">Worship Display System</span>
+          </div>
+        </div>
       </div>
 
-      <div className="control-section languages">
-        <h3>🌐 Language Settings</h3>
-        <div className="language-controls">
-          {[
-            { id: 'tamil', label: 'தமிழ் (Tamil)', emoji: '🟦' },
-            { id: 'hindi', label: 'हिन्दी (Hindi)', emoji: '🟧' },
-            { id: 'english', label: 'English', emoji: '🟩' }
-          ].map(lang => (
-            <div key={lang.id} className={`lang-control ${visibleLangs.includes(lang.id) ? 'active' : ''}`}>
-              <div className="lang-header">
-                <label className="lang-toggle">
-                  <input
-                    type="checkbox"
-                    checked={visibleLangs.includes(lang.id)}
-                    onChange={() => toggleLanguage(lang.id)}
-                  />
-                  <span className="toggle-slider"></span>
-                  <span className="lang-label">
-                    <span className="lang-emoji">{lang.emoji}</span>
-                    {lang.label}
-                  </span>
-                </label>
-              </div>
-              <div className="font-size-control">
-                <button
-                  className="size-btn decrease"
-                  onClick={() => handleFontSizeChange(lang.id,
-                    (lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize) - 2
-                  )}
-                >
-                  −
-                </button>
-                <div className="size-display">
-                  <input
-                    type="number"
-                    value={lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize}
-                    onChange={(e) => handleFontSizeChange(lang.id, e.target.value)}
-                    min="10"
-                    max="100"
-                    className="font-size-input"
-                  />
-                  <span className="size-label">px</span>
-                </div>
-                <button
-                  className="size-btn increase"
-                  onClick={() => handleFontSizeChange(lang.id,
-                    (lang.id === 'tamil' ? tamilFontSize : lang.id === 'hindi' ? hindiFontSize : englishFontSize) + 2
-                  )}
-                >
-                  +
-                </button>
-              </div>
+      <div className="control-bar-center">
+        <div className="live-status-container">
+          {liveStatus ? (
+            <div className="live-indicator active">
+              <span className="live-dot"></span>
+              <span className="live-text">LIVE</span>
             </div>
-          ))}
+          ) : (
+            <div className="live-indicator inactive">
+              <span className="live-text">OFFLINE</span>
+            </div>
+          )}
         </div>
-      </div>
 
-      <div className="control-section">
-        <h3>Alignment</h3>
-        <div className="alignment-controls">
-          <button
-            className={alignment === 'top-bottom' ? 'active' : ''}
-            onClick={() => handleAlignmentChange('top-bottom')}
-          >
-            Top-Bottom
-          </button>
-          <button
-            className={alignment === 'side-by-side' ? 'active' : ''}
-            onClick={() => handleAlignmentChange('side-by-side')}
-          >
-            Side-by-Side
-          </button>
-          <button
-            className={alignment === 'diagonal' ? 'active' : ''}
-            onClick={() => handleAlignmentChange('diagonal')}
-          >
-            Diagonal
-          </button>
-        </div>
-      </div>
-
-      <div className="control-section live-controls">
         <button
-          className={`live-button ${liveStatus ? 'live' : 'ready'}`}
+          className={`main-live-button ${liveStatus ? 'stop' : 'go'}`}
           onClick={toggleLive}
         >
-          {liveStatus ? '⏹ STOP' : '▶️ GO LIVE'}
+          <span className="button-icon">{liveStatus ? '⏹' : '▶️'}</span>
+          <span className="button-text">{liveStatus ? 'Stop Broadcasting' : 'Start Broadcasting'}</span>
         </button>
+
         <button
-          className="open-live-btn"
+          className="display-button"
           onClick={() => window.open('/live', '_blank')}
-          title="Open Live Display in new window"
+          title="Open Live Display"
         >
-          📺 Open Live Display
+          <span className="button-icon">🖥️</span>
+          <span className="button-text">Display</span>
         </button>
+      </div>
+
+      <div className="control-bar-right">
+        <div className="quick-actions">
+          <button
+            className="icon-button theme-btn"
+            onClick={() => setDarkMode(!darkMode)}
+            title={darkMode ? 'Light Mode' : 'Dark Mode'}
+          >
+            {darkMode ? '☀️' : '🌙'}
+          </button>
+
+          <button
+            className="icon-button settings-btn"
+            onClick={onOpenSettings}
+            title="Settings"
+          >
+            ⚙️
+          </button>
+        </div>
       </div>
     </div>
   );
 };
 
 // LyricsList Component
-const LyricsList = ({ onSelectLyrics, selectedId }) => {
+const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
   const [lyricsList, setLyricsList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -629,17 +748,34 @@ const LyricsPreviewControl = ({ selectedLyrics }) => {
 };
 
 // Controller Page Component
-const ControllerPage = ({ selectedLyrics, setSelectedLyrics, darkMode, setDarkMode }) => {
+const ControllerPage = ({ selectedLyrics, setSelectedLyrics, darkMode, setDarkMode, settings, onSettingsChange }) => {
+  const [showSettings, setShowSettings] = useState(false);
+
   return (
     <div className="controller-page">
-      <LyricsControlBar darkMode={darkMode} setDarkMode={setDarkMode} />
+      <LyricsControlBar
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        onOpenSettings={() => setShowSettings(true)}
+        settings={settings}
+      />
       <div className="controller-main">
         <LyricsList
           onSelectLyrics={setSelectedLyrics}
           selectedId={selectedLyrics?.id}
+          settings={settings}
         />
-        <LyricsPreviewControl selectedLyrics={selectedLyrics} />
+        <LyricsPreviewControl
+          selectedLyrics={selectedLyrics}
+          settings={settings}
+        />
       </div>
+      <Settings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
+        settings={settings}
+        onSettingsChange={onSettingsChange}
+      />
     </div>
   );
 };
@@ -780,6 +916,23 @@ function App() {
     const savedMode = localStorage.getItem('darkMode');
     return savedMode === 'true';
   });
+  const [settings, setSettings] = useState(() => {
+    // Load settings from localStorage or use defaults
+    const savedSettings = localStorage.getItem('appSettings');
+    if (savedSettings) {
+      return JSON.parse(savedSettings);
+    }
+    return {
+      visibleLanguages: ['tamil', 'hindi', 'english'],
+      tamilFontSize: 20,
+      hindiFontSize: 20,
+      englishFontSize: 20,
+      alignment: 'top-bottom',
+      autoCapitalize: true,
+      showSongNumbers: true,
+      showAlternativeTitle: true
+    };
+  });
 
   // Check if we're on the /live route
   const isLiveRoute = window.location.pathname === '/live';
@@ -842,6 +995,8 @@ function App() {
         setSelectedLyrics={setSelectedLyrics}
         darkMode={darkMode}
         setDarkMode={setDarkMode}
+        settings={settings}
+        onSettingsChange={setSettings}
       />
     </div>
   );
