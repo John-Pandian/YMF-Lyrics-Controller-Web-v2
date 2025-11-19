@@ -224,6 +224,11 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
   const [lyricsList, setLyricsList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [languageFilter, setLanguageFilter] = useState({
+    tamil: false,
+    hindi: false,
+    english: false
+  });
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [newLyrics, setNewLyrics] = useState({
     title: '',
@@ -256,19 +261,47 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
     return () => unsubscribe();
   }, []);
 
-  const handleSearch = (value) => {
-    setSearchTerm(value);
-    const searchLower = value.toLowerCase();
+  // Apply filters whenever search term or language filters change
+  useEffect(() => {
+    applyFilters();
+  }, [searchTerm, languageFilter, lyricsList]);
 
-    if (searchLower === '') {
-      setFilteredList(lyricsList);
-    } else {
-      const filtered = lyricsList.filter(song =>
+  const applyFilters = () => {
+    let filtered = [...lyricsList];
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(song =>
         song.title.toLowerCase().includes(searchLower) ||
         (song.alternativeTitle && song.alternativeTitle.toLowerCase().includes(searchLower))
       );
-      setFilteredList(filtered);
     }
+
+    // Apply language filters
+    const hasLanguageFilter = languageFilter.tamil || languageFilter.hindi || languageFilter.english;
+    if (hasLanguageFilter) {
+      filtered = filtered.filter(song => {
+        return (
+          (languageFilter.tamil && song.tamil) ||
+          (languageFilter.hindi && song.hindi) ||
+          (languageFilter.english && song.english)
+        );
+      });
+    }
+
+    setFilteredList(filtered);
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
+
+  const toggleLanguageFilter = (lang) => {
+    setLanguageFilter(prev => ({
+      ...prev,
+      [lang]: !prev[lang]
+    }));
   };
 
   const handleAddLyrics = async () => {
@@ -328,6 +361,43 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
         />
       </div>
 
+      <div className="language-filters">
+        <span className="filter-label">Filter by:</span>
+        <button
+          className={`filter-btn tamil-filter ${languageFilter.tamil ? 'active' : ''}`}
+          onClick={() => toggleLanguageFilter('tamil')}
+          title="Filter Tamil songs"
+        >
+          <span className="filter-icon">த</span>
+          <span className="filter-text">Tamil</span>
+        </button>
+        <button
+          className={`filter-btn hindi-filter ${languageFilter.hindi ? 'active' : ''}`}
+          onClick={() => toggleLanguageFilter('hindi')}
+          title="Filter Hindi songs"
+        >
+          <span className="filter-icon">हि</span>
+          <span className="filter-text">Hindi</span>
+        </button>
+        <button
+          className={`filter-btn english-filter ${languageFilter.english ? 'active' : ''}`}
+          onClick={() => toggleLanguageFilter('english')}
+          title="Filter English songs"
+        >
+          <span className="filter-icon">E</span>
+          <span className="filter-text">English</span>
+        </button>
+        {(languageFilter.tamil || languageFilter.hindi || languageFilter.english) && (
+          <button
+            className="filter-clear"
+            onClick={() => setLanguageFilter({ tamil: false, hindi: false, english: false })}
+            title="Clear filters"
+          >
+            ✕ Clear
+          </button>
+        )}
+      </div>
+
       <div className="songs-list">
         {lyricsList.length === 0 ? (
           <div className="empty-state">
@@ -339,7 +409,13 @@ const LyricsList = ({ onSelectLyrics, selectedId }) => {
           <div className="empty-state">
             <div className="empty-icon">🔎</div>
             <div className="empty-text">No results found</div>
-            <div className="empty-subtext">Try a different search term</div>
+            <div className="empty-subtext">
+              {searchTerm && (languageFilter.tamil || languageFilter.hindi || languageFilter.english)
+                ? 'Try adjusting your search or filters'
+                : searchTerm
+                ? 'Try a different search term'
+                : 'No songs match the selected languages'}
+            </div>
           </div>
         ) : (
           filteredList.map((lyrics, index) => (
