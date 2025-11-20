@@ -818,6 +818,17 @@ body.dark-mode .lang-control.active {
   flex-shrink: 0;
 }
 
+.song-number-wrapper:hover .song-number:not(.in-queue) {
+  background: #4a5568;
+  color: white;
+  transform: scale(1.05);
+}
+
+.song-number-wrapper:hover .song-number.in-queue {
+  background: #dc2626 !important;
+  transform: scale(1.05);
+}
+
 .song-content {
   flex: 1;
   min-width: 0;
@@ -1318,9 +1329,9 @@ body.dark-mode .quick-lang-btn.active {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0a0a0a; /* Matte black */
   color: white;
   overflow: hidden;
+  transition: background-color 0.3s ease;
 }
 
 .default-display {
@@ -1372,10 +1383,10 @@ body.dark-mode .quick-lang-btn.active {
   text-align: center;
   white-space: pre-wrap;
   line-height: 1.6;
-  color: #ffffff;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   font-weight: 500;
   letter-spacing: 0.5px;
+  transition: color 0.3s ease;
 }
 
 .live-language.tamil {
@@ -1574,6 +1585,21 @@ body.dark-mode .song-item.selected {
 body.dark-mode .song-number {
   background: #1f1f1f;
   color: #9ca3af;
+}
+
+/* Queue section dark mode */
+body.dark-mode .queue-section {
+  background: #1f1f1f !important;
+  border-bottom-color: #3d3d3d !important;
+}
+
+body.dark-mode .queue-toggle-button {
+  background: #2d2d2d !important;
+  color: #9ca3af !important;
+}
+
+body.dark-mode .queue-toggle-button:hover {
+  background: #3d3d3d !important;
 }
 
 body.dark-mode .song-alt-title {

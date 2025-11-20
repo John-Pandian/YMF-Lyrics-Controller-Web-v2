@@ -49,7 +49,11 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
       autoCapitalize: true,
       showSongNumbers: true,
       showAlternativeTitle: true,
-      previewLanguage: 'english'
+      previewLanguage: 'english',
+      backgroundColor: '#0a0a0a',
+      tamilTextColor: '#ffffff',
+      hindiTextColor: '#ffffff',
+      englishTextColor: '#ffffff'
     };
     setLocalSettings(defaultSettings);
   };
@@ -351,6 +355,36 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
             </div>
 
             <div className="setting-item">
+              <label style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                <span>Background Color:</span>
+                <input
+                  type="color"
+                  value={localSettings.backgroundColor || '#0a0a0a'}
+                  onChange={(e) => setLocalSettings({...localSettings, backgroundColor: e.target.value})}
+                  style={{
+                    width: '50px',
+                    height: '30px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    cursor: 'pointer'
+                  }}
+                />
+                <input
+                  type="text"
+                  value={localSettings.backgroundColor || '#0a0a0a'}
+                  onChange={(e) => setLocalSettings({...localSettings, backgroundColor: e.target.value})}
+                  style={{
+                    width: '80px',
+                    padding: '4px 8px',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '6px',
+                    fontSize: '13px'
+                  }}
+                />
+              </label>
+            </div>
+
+            <div className="setting-item">
               <label>
                 <input
                   type="checkbox"
@@ -359,6 +393,95 @@ const Settings = ({ isOpen, onClose, settings, onSettingsChange }) => {
                 />
                 <span>Auto-capitalize lyrics</span>
               </label>
+            </div>
+
+            <div className="setting-item">
+              <span style={{display: 'block', marginBottom: '12px', fontWeight: '500'}}>Text Colors per Language</span>
+              <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>தமிழ்</span>
+                  <input
+                    type="color"
+                    value={localSettings.tamilTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, tamilTextColor: e.target.value})}
+                    style={{
+                      width: '50px',
+                      height: '30px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={localSettings.tamilTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, tamilTextColor: e.target.value})}
+                    style={{
+                      width: '80px',
+                      padding: '4px 8px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px'
+                    }}
+                  />
+                </div>
+
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>हिन्दी</span>
+                  <input
+                    type="color"
+                    value={localSettings.hindiTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, hindiTextColor: e.target.value})}
+                    style={{
+                      width: '50px',
+                      height: '30px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={localSettings.hindiTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, hindiTextColor: e.target.value})}
+                    style={{
+                      width: '80px',
+                      padding: '4px 8px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px'
+                    }}
+                  />
+                </div>
+
+                <div style={{display: 'flex', alignItems: 'center', gap: '12px'}}>
+                  <span style={{width: '70px', fontSize: '14px'}}>English</span>
+                  <input
+                    type="color"
+                    value={localSettings.englishTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, englishTextColor: e.target.value})}
+                    style={{
+                      width: '50px',
+                      height: '30px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={localSettings.englishTextColor || '#ffffff'}
+                    onChange={(e) => setLocalSettings({...localSettings, englishTextColor: e.target.value})}
+                    style={{
+                      width: '80px',
+                      padding: '4px 8px',
+                      border: '1px solid #d1d5db',
+                      borderRadius: '6px',
+                      fontSize: '13px'
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="setting-item">
@@ -445,6 +568,10 @@ const LyricsControlBar = ({ darkMode, setDarkMode, onOpenSettings, settings }) =
         tamilfontSize: settings.tamilFontSize || 20,
         hindifontSize: settings.hindiFontSize || 20,
         englishfontSize: settings.englishFontSize || 20,
+        backgroundColor: settings.backgroundColor || '#0a0a0a',
+        tamilTextColor: settings.tamilTextColor || '#ffffff',
+        hindiTextColor: settings.hindiTextColor || '#ffffff',
+        englishTextColor: settings.englishTextColor || '#ffffff',
         isLive: liveStatus,
         currentIndex: currentIndex
       };
@@ -537,6 +664,12 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
     english: false
   });
   const [showAddDialog, setShowAddDialog] = useState(false);
+  const [queue, setQueue] = useState(() => {
+    // Load queue from localStorage
+    const savedQueue = localStorage.getItem('songQueue');
+    return savedQueue ? JSON.parse(savedQueue) : [];
+  });
+  const [showQueue, setShowQueue] = useState(false);
   const [newLyrics, setNewLyrics] = useState({
     title: '',
     alternativeTitle: '',
@@ -611,6 +744,28 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
     }));
   };
 
+  // Queue management functions
+  const addToQueue = (song) => {
+    const newQueue = [...queue, song];
+    setQueue(newQueue);
+    localStorage.setItem('songQueue', JSON.stringify(newQueue));
+  };
+
+  const removeFromQueue = (songId) => {
+    const newQueue = queue.filter(song => song.id !== songId);
+    setQueue(newQueue);
+    localStorage.setItem('songQueue', JSON.stringify(newQueue));
+  };
+
+  const clearQueue = () => {
+    setQueue([]);
+    localStorage.removeItem('songQueue');
+  };
+
+  const isInQueue = (songId) => {
+    return queue.some(song => song.id === songId);
+  };
+
   const handleAddLyrics = async () => {
     if (!newLyrics.title) {
       alert('Please enter a title');
@@ -652,10 +807,33 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
           <h3>📚 Song Library</h3>
           <span className="song-count">{lyricsList.length} songs</span>
         </div>
-        <button onClick={() => setShowAddDialog(true)} className="add-button">
-          <span className="add-icon">+</span>
-          <span className="add-text">Add Song</span>
-        </button>
+        <div style={{display: 'flex', gap: '8px'}}>
+          <button
+            onClick={() => setShowQueue(!showQueue)}
+            className="queue-toggle-button"
+            style={{
+              padding: '8px 16px',
+              borderRadius: '8px',
+              border: 'none',
+              background: showQueue ? '#4a5568' : '#e5e7eb',
+              color: showQueue ? 'white' : '#4a5568',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              transition: 'all 0.2s'
+            }}
+          >
+            <span>📋</span>
+            <span>Queue ({queue.length})</span>
+          </button>
+          <button onClick={() => setShowAddDialog(true)} className="add-button">
+            <span className="add-icon">+</span>
+            <span className="add-text">Add Song</span>
+          </button>
+        </div>
       </div>
 
       <div className="list-search">
@@ -705,6 +883,224 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
         )}
       </div>
 
+      {showQueue && (
+        <div className="queue-section" style={{
+          padding: '20px',
+          background: 'linear-gradient(to bottom, #f9fafb, #f3f4f6)',
+          borderBottom: '3px solid #e5e7eb',
+          maxHeight: '350px',
+          overflowY: 'auto'
+        }}>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px'}}>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <span style={{fontSize: '20px'}}>🎵</span>
+              <div>
+                <h4 style={{margin: 0, fontSize: '16px', fontWeight: '600', color: '#1f2937'}}>Today's Queue</h4>
+                <p style={{margin: 0, fontSize: '12px', color: '#6b7280'}}>{queue.length} song{queue.length !== 1 ? 's' : ''} selected</p>
+              </div>
+            </div>
+            {queue.length > 0 && (
+              <button
+                onClick={clearQueue}
+                style={{
+                  padding: '6px 14px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: '#fee2e2',
+                  color: '#dc2626',
+                  cursor: 'pointer',
+                  fontSize: '13px',
+                  fontWeight: '500',
+                  transition: 'all 0.2s'
+                }}
+                onMouseEnter={(e) => {
+                  e.target.style.background = '#fecaca';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.background = '#fee2e2';
+                }}
+              >
+                ✕ Clear All
+              </button>
+            )}
+          </div>
+          {queue.length === 0 ? (
+            <div style={{
+              textAlign: 'center',
+              padding: '40px 20px',
+              background: 'white',
+              borderRadius: '12px',
+              border: '2px dashed #e5e7eb'
+            }}>
+              <div style={{fontSize: '32px', marginBottom: '8px'}}>📋</div>
+              <div style={{color: '#6b7280', fontSize: '14px'}}>
+                Queue is empty
+              </div>
+              <div style={{color: '#9ca3af', fontSize: '12px', marginTop: '4px'}}>
+                Click on song numbers to add them here
+              </div>
+            </div>
+          ) : (
+            <div style={{display: 'flex', flexDirection: 'column', gap: '6px'}}>
+              {queue.map((song, index) => (
+                <div
+                  key={song.id}
+                  className={`queue-item ${selectedId === song.id ? 'active' : ''}`}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    padding: '10px 12px',
+                    background: selectedId === song.id ? '#4a5568' : 'white',
+                    borderRadius: '8px',
+                    border: selectedId === song.id ? '1px solid #4a5568' : '1px solid #e5e7eb',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    position: 'relative',
+                    overflow: 'hidden'
+                  }}
+                  onClick={() => onSelectLyrics(song)}
+                  onMouseEnter={(e) => {
+                    if (selectedId !== song.id) {
+                      e.currentTarget.style.background = '#f9fafb';
+                      e.currentTarget.style.transform = 'translateX(2px)';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    if (selectedId !== song.id) {
+                      e.currentTarget.style.background = 'white';
+                      e.currentTarget.style.transform = 'translateX(0)';
+                    }
+                  }}
+                >
+                  {selectedId === song.id && (
+                    <div style={{
+                      position: 'absolute',
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: '3px',
+                      background: '#10b981'
+                    }} />
+                  )}
+
+                  <div style={{
+                    width: '28px',
+                    height: '28px',
+                    borderRadius: '6px',
+                    background: selectedId === song.id ? 'rgba(255,255,255,0.2)' : '#f3f4f6',
+                    color: selectedId === song.id ? 'white' : '#4a5568',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '12px',
+                    fontWeight: '600',
+                    marginRight: '12px',
+                    flexShrink: 0
+                  }}>
+                    {index + 1}
+                  </div>
+
+                  <div style={{flex: 1, minWidth: 0}}>
+                    <div style={{
+                      fontWeight: '500',
+                      fontSize: '14px',
+                      color: selectedId === song.id ? 'white' : '#1f2937',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis'
+                    }}>
+                      {song.title}
+                    </div>
+                    {song.alternativeTitle && (
+                      <div style={{
+                        fontSize: '12px',
+                        color: selectedId === song.id ? 'rgba(255,255,255,0.7)' : '#6b7280',
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                      }}>
+                        {song.alternativeTitle}
+                      </div>
+                    )}
+                  </div>
+
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    marginLeft: '12px'
+                  }}>
+                    {song.tamil && (
+                      <span style={{
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: selectedId === song.id ? 'rgba(255,255,255,0.2)' : '#fef3c7',
+                        color: selectedId === song.id ? 'white' : '#92400e',
+                        fontSize: '10px',
+                        fontWeight: '600'
+                      }}>த</span>
+                    )}
+                    {song.hindi && (
+                      <span style={{
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: selectedId === song.id ? 'rgba(255,255,255,0.2)' : '#dbeafe',
+                        color: selectedId === song.id ? 'white' : '#1e40af',
+                        fontSize: '10px',
+                        fontWeight: '600'
+                      }}>हि</span>
+                    )}
+                    {song.english && (
+                      <span style={{
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        background: selectedId === song.id ? 'rgba(255,255,255,0.2)' : '#dcfce7',
+                        color: selectedId === song.id ? 'white' : '#166534',
+                        fontSize: '10px',
+                        fontWeight: '600'
+                      }}>E</span>
+                    )}
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeFromQueue(song.id);
+                    }}
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      borderRadius: '6px',
+                      border: 'none',
+                      background: selectedId === song.id ? 'rgba(255,255,255,0.2)' : 'transparent',
+                      color: selectedId === song.id ? 'white' : '#9ca3af',
+                      cursor: 'pointer',
+                      fontSize: '16px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      marginLeft: '8px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = '#fee2e2';
+                      e.target.style.color = '#dc2626';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = selectedId === song.id ? 'rgba(255,255,255,0.2)' : 'transparent';
+                      e.target.style.color = selectedId === song.id ? 'white' : '#9ca3af';
+                    }}
+                    title="Remove from queue"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       <div className="songs-list">
         {lyricsList.length === 0 ? (
           <div className="empty-state">
@@ -731,7 +1127,32 @@ const LyricsList = ({ onSelectLyrics, selectedId, settings = {} }) => {
               className={`song-item ${selectedId === lyrics.id ? 'selected' : ''}`}
               onClick={() => onSelectLyrics(lyrics)}
             >
-              <div className="song-number">{index + 1}</div>
+              <div
+                className={`song-number-wrapper ${isInQueue(lyrics.id) ? 'queued' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (isInQueue(lyrics.id)) {
+                    removeFromQueue(lyrics.id);
+                  } else {
+                    addToQueue(lyrics);
+                  }
+                }}
+                style={{
+                  position: 'relative',
+                  cursor: 'pointer'
+                }}
+                title={isInQueue(lyrics.id) ? 'Click to remove from queue' : 'Click to add to queue'}
+              >
+                <div className={`song-number ${isInQueue(lyrics.id) ? 'in-queue' : ''}`}
+                  style={{
+                    background: isInQueue(lyrics.id) ? '#10b981' : '',
+                    color: isInQueue(lyrics.id) ? 'white' : '',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {isInQueue(lyrics.id) ? '✓' : index + 1}
+                </div>
+              </div>
               <div className="song-content">
                 <div className="song-title">{lyrics.title}</div>
                 {lyrics.alternativeTitle && (
@@ -1144,6 +1565,10 @@ const LiveLyricsBlock = () => {
     tamilfontSize: 20,
     hindifontSize: 20,
     englishfontSize: 20,
+    backgroundColor: '#0a0a0a',
+    tamilTextColor: '#ffffff',
+    hindiTextColor: '#ffffff',
+    englishTextColor: '#ffffff',
     currentIndex: 0
   });
   const [currentLyrics, setCurrentLyrics] = useState(null);
@@ -1198,7 +1623,7 @@ const LiveLyricsBlock = () => {
 
   if (!liveSettings.isLive) {
     return (
-      <div className="live-display default-display">
+      <div className="live-display default-display" style={{ background: liveSettings.backgroundColor || '#0a0a0a' }}>
         <h1>Shalom</h1>
       </div>
     );
@@ -1225,7 +1650,7 @@ const LiveLyricsBlock = () => {
 
   if (!hasContent) {
     return (
-      <div className="live-display default-display">
+      <div className="live-display default-display" style={{ background: liveSettings.backgroundColor || '#0a0a0a' }}>
         <h2 style={{ color: '#999' }}>No lyrics to display</h2>
         <p style={{ color: '#777', marginTop: '10px' }}>Please select a song and go live</p>
       </div>
@@ -1233,11 +1658,14 @@ const LiveLyricsBlock = () => {
   }
 
   return (
-    <div className={`live-display ${getAlignmentClass()}`}>
+    <div className={`live-display ${getAlignmentClass()}`} style={{ background: liveSettings.backgroundColor || '#0a0a0a' }}>
       {visibleLangs.includes('tamil') && sections.tamil && sections.tamil[currentIdx] && (
         <div
           className="live-language tamil"
-          style={{ fontSize: `${liveSettings.tamilfontSize || 20}px` }}
+          style={{
+            fontSize: `${liveSettings.tamilfontSize || 20}px`,
+            color: liveSettings.tamilTextColor || '#ffffff'
+          }}
         >
           {capitalizeWords(sections.tamil[currentIdx])}
         </div>
@@ -1245,7 +1673,10 @@ const LiveLyricsBlock = () => {
       {visibleLangs.includes('hindi') && sections.hindi && sections.hindi[currentIdx] && (
         <div
           className="live-language hindi"
-          style={{ fontSize: `${liveSettings.hindifontSize || 20}px` }}
+          style={{
+            fontSize: `${liveSettings.hindifontSize || 20}px`,
+            color: liveSettings.hindiTextColor || '#ffffff'
+          }}
         >
           {capitalizeWords(sections.hindi[currentIdx])}
         </div>
@@ -1253,7 +1684,10 @@ const LiveLyricsBlock = () => {
       {visibleLangs.includes('english') && sections.english && sections.english[currentIdx] && (
         <div
           className="live-language english"
-          style={{ fontSize: `${liveSettings.englishfontSize || 20}px` }}
+          style={{
+            fontSize: `${liveSettings.englishfontSize || 20}px`,
+            color: liveSettings.englishTextColor || '#ffffff'
+          }}
         >
           {capitalizeWords(sections.english[currentIdx])}
         </div>
@@ -1286,7 +1720,11 @@ function App() {
       autoCapitalize: true,
       showSongNumbers: true,
       showAlternativeTitle: true,
-      previewLanguage: 'english'
+      previewLanguage: 'english',
+      backgroundColor: '#0a0a0a',
+      tamilTextColor: '#ffffff',
+      hindiTextColor: '#ffffff',
+      englishTextColor: '#ffffff'
     };
   });
 
