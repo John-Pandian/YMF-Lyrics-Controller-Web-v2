@@ -1742,6 +1742,41 @@ function App() {
     localStorage.setItem('darkMode', darkMode);
   }, [darkMode]);
 
+  // Load settings from Firebase on mount
+  useEffect(() => {
+    const liveRef = ref(realtimeDb, 'live');
+    const unsubscribe = onValue(liveRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        // Get current localStorage settings for fields not in Firebase
+        const savedSettings = localStorage.getItem('appSettings');
+        const localSettings = savedSettings ? JSON.parse(savedSettings) : {};
+
+        // Map Firebase settings to app settings format
+        const firebaseSettings = {
+          visibleLanguages: data.visible_langs || ['tamil', 'hindi', 'english'],
+          tamilFontSize: data.tamilfontSize || 20,
+          hindiFontSize: data.hindifontSize || 20,
+          englishFontSize: data.englishfontSize || 20,
+          alignment: data.alignment || 'top-bottom',
+          backgroundColor: data.backgroundColor || '#0a0a0a',
+          tamilTextColor: data.tamilTextColor || '#ffffff',
+          hindiTextColor: data.hindiTextColor || '#ffffff',
+          englishTextColor: data.englishTextColor || '#ffffff',
+          autoCapitalize: localSettings.autoCapitalize !== undefined ? localSettings.autoCapitalize : true,
+          showSongNumbers: localSettings.showSongNumbers !== undefined ? localSettings.showSongNumbers : true,
+          showAlternativeTitle: localSettings.showAlternativeTitle !== undefined ? localSettings.showAlternativeTitle : true,
+          previewLanguage: localSettings.previewLanguage || 'english'
+        };
+
+        setSettings(firebaseSettings);
+        localStorage.setItem('appSettings', JSON.stringify(firebaseSettings));
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
   // Sync selected lyrics with Firebase on mount and when preview changes
   useEffect(() => {
     const previewRef = ref(realtimeDb, 'preview');
