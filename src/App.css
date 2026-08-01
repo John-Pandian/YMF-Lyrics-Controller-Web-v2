@@ -272,6 +272,87 @@ body.dark-mode .display-button:hover {
   color: white;
 }
 
+/* Bible Verse Button */
+.bible-verse-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 2px solid #8b5cf6;
+  background: transparent;
+  color: #8b5cf6;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.bible-verse-button:hover {
+  background: #8b5cf6;
+  color: white;
+  transform: translateY(-2px);
+}
+
+body.dark-mode .bible-verse-button {
+  border-color: #a78bfa;
+  color: #c4b5fd;
+}
+
+body.dark-mode .bible-verse-button:hover {
+  background: #8b5cf6;
+  color: white;
+}
+
+/* Display Mode Toggle */
+.display-mode-toggle {
+  display: flex;
+  gap: 4px;
+  background: #f3f4f6;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+body.dark-mode .display-mode-toggle {
+  background: #2d2d2d;
+}
+
+.mode-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #6b7280;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+}
+
+.mode-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
+body.dark-mode .mode-btn {
+  color: #9ca3af;
+}
+
+body.dark-mode .mode-btn:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+body.dark-mode .mode-btn.active {
+  background: #3b82f6;
+  color: white;
+}
+
 /* Quick Actions */
 .quick-actions {
   display: flex;
@@ -1016,6 +1097,543 @@ body.dark-mode .lang-control.active {
 
 .save-button:hover {
   background: #2d3748;
+}
+
+/* Bible App - Image Style */
+.bible-app {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #0d0d0d;
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  color: #ffffff;
+}
+
+/* Top Bar */
+.bible-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 20px;
+  background: #1a1a1a;
+  border-bottom: 1px solid #2d2d2d;
+  gap: 20px;
+}
+
+.bible-tabs {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  color: #ffffff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  background: #3d3d3d;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: #0d0d0d;
+  border-color: #ffffff;
+}
+
+/* Search Box */
+.bible-search-wrapper {
+  flex: 1;
+  position: relative;
+  max-width: 500px;
+}
+
+.bible-search-box {
+  width: 100%;
+  padding: 10px 16px;
+  background: #2d2d2d;
+  border: 2px solid #404040;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.bible-search-box:focus {
+  outline: none;
+  border-color: #666;
+  background: #3d3d3d;
+}
+
+.bible-search-box::placeholder {
+  color: #999;
+}
+
+.search-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.search-suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-bottom: 1px solid #3d3d3d;
+}
+
+.search-suggestion-item:last-child {
+  border-bottom: none;
+}
+
+.search-suggestion-item:hover {
+  background: #3d3d3d;
+}
+
+.search-suggestion-item.selected {
+  background: #3d3d3d;
+}
+
+.suggestion-name {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.suggestion-info {
+  color: #999;
+  font-size: 12px;
+}
+
+.bible-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.action-btn {
+  background: #2d2d2d;
+  border: 1px solid #404040;
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+  background: #3d3d3d;
+}
+
+.set-btn {
+  background: #4caf50;
+  border-color: #4caf50;
+}
+
+.set-btn:hover {
+  background: #45a049;
+}
+
+/* Main Layout */
+.bible-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Left Sidebar - Books */
+.bible-sidebar {
+  width: 140px;
+  background: #1a1a1a;
+  border-right: 1px solid #2d2d2d;
+  overflow-y: auto;
+}
+
+.books-list {
+  padding: 8px 0;
+}
+
+.book-item {
+  padding: 10px 16px;
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+}
+
+.book-item:hover {
+  background: #242424;
+}
+
+.book-item.active {
+  background: #2d2d2d;
+  border-left-color: #ffffff;
+}
+
+/* Middle Section - Numbers */
+.bible-middle {
+  background: #0d0d0d;
+  padding: 16px;
+  border-right: 1px solid #2d2d2d;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.grid-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.numbers-grid-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.section-divider {
+  height: 1px;
+  background: #2d2d2d;
+  margin: 16px 0;
+  flex-shrink: 0;
+}
+
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 180px;
+}
+
+.number-box {
+  background: #1a1a1a;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  padding: 10px 8px;
+  text-align: center;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.number-box:hover {
+  background: #2d2d2d;
+  border-color: #5d5d5d;
+}
+
+.number-box.selected {
+  background: #3d3d3d;
+  border-color: #ffffff;
+}
+
+.grid-empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-size: 13px;
+  min-height: 100px;
+}
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Right Display Area */
+.bible-display {
+  flex: 1;
+  background: #1a1a1a;
+  border-left: 1px solid #2d2d2d;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.display-section {
+  padding: 20px 0;
+}
+
+.display-section.recent-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-label {
+  color: #999;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 12px;
+}
+
+.display-divider {
+  height: 1px;
+  background: #2d2d2d;
+  margin: 0;
+}
+
+/* Selected Verse Preview */
+.verse-preview {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 600;
+  padding: 16px;
+  background: #242424;
+  border: 2px solid #3d3d3d;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.verse-preview.empty {
+  color: #666;
+  border-style: dashed;
+}
+
+/* Current Set Verse */
+.verse-current {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  padding: 20px;
+  background: #242424;
+  border: 2px solid #4caf50;
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+}
+
+.verse-current.empty {
+  color: #666;
+  border-color: #3d3d3d;
+  border-style: dashed;
+  font-size: 16px;
+}
+
+.success-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #4caf50;
+  color: white;
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+/* Recent Verses */
+.recent-section .recent-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.recent-item {
+  background: #242424;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.recent-item:hover {
+  background: #2d2d2d;
+  border-color: #5d5d5d;
+  transform: translateX(4px);
+}
+
+/* Display Settings */
+.settings-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.setting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.setting-item label {
+  color: #cccccc;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.slider {
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: #2d2d2d;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4caf50;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #4caf50;
+  cursor: pointer;
+  border: none;
+}
+
+.color-picker {
+  width: 100%;
+  height: 40px;
+  border: 2px solid #3d3d3d;
+  border-radius: 6px;
+  background: #1a1a1a;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.color-picker::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.color-picker::-webkit-color-swatch {
+  border: none;
+  border-radius: 4px;
+}
+
+/* Settings Icon Button */
+.settings-icon-btn {
+  font-size: 20px !important;
+  padding: 8px 14px !important;
+  min-width: auto !important;
+}
+
+/* Verse Display Settings Modal */
+.verse-settings-modal {
+  background: #1a1a1a;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.modal-content {
+  position: relative;
+  background: #1a1a1a;
+  border: 1px solid #3d3d3d;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #2d2d2d;
+}
+
+.modal-header h2 {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background: #2d2d2d;
+  color: #ffffff;
+}
+
+.modal-body {
+  padding: 24px;
 }
 
 /* Preview Control */
