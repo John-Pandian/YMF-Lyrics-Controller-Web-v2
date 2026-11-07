@@ -101,6 +101,7 @@ const BibleVerseScreen = ({ onClose }) => {
   const [selectedBook, setSelectedBook] = useState(null);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedVerse, setSelectedVerse] = useState(null);
+  const [rangeEndVerse, setRangeEndVerse] = useState(null);
   const [recentVerses, setRecentVerses] = useState([]);
   const [showSetConfirmation, setShowSetConfirmation] = useState(false);
   const [currentSetVerse, setCurrentSetVerse] = useState(null);
@@ -193,21 +194,30 @@ const BibleVerseScreen = ({ onClose }) => {
     setSelectedBook(book);
     setSelectedChapter(null);
     setSelectedVerse(null);
+    setRangeEndVerse(null);
   };
 
   const handleChapterClick = (chapterNum) => {
     setSelectedChapter(chapterNum);
     setSelectedVerse(null);
+    setRangeEndVerse(null);
   };
 
-  const handleVerseClick = (verseNum) => {
-    setSelectedVerse(verseNum);
+  const handleVerseClick = (verseNum, e) => {
+    // Hold Alt and click a second verse to build a range (e.g., click 10, then Alt+click 20 → 10-20)
+    if (e.altKey && selectedVerse !== null && rangeEndVerse === null && verseNum !== selectedVerse) {
+      setSelectedVerse(Math.min(selectedVerse, verseNum));
+      setRangeEndVerse(Math.max(selectedVerse, verseNum));
+    } else {
+      setSelectedVerse(verseNum);
+      setRangeEndVerse(null);
+    }
     setShowSetConfirmation(false);
   };
 
   const handleSetVerse = () => {
     if (selectedBook && selectedChapter && selectedVerse) {
-      const verseRef = `${selectedBook.name} ${selectedChapter}:${selectedVerse}`;
+      const verseRef = buildVerseRef(selectedBook.name, selectedChapter, selectedVerse, rangeEndVerse);
       saveRecentVerse(verseRef);
 
       // Save to Firebase
@@ -245,6 +255,56 @@ const BibleVerseScreen = ({ onClose }) => {
     }, 2000);
   };
 
+  // Step the currently displayed verse forward/backward (direction: 1 = next, -1 = prev)
+  const stepVerse = (direction) => {
+    const parsed = currentSetVerse ? parseVerseReference(currentSetVerse) : null;
+    if (!parsed || !parsed.verse) return;
+
+    const book = parsed.book;
+    const versesIn = (ch) => book.verses[ch - 1];
+    let { chapter, verse } = parsed;
+    const verseEnd = parsed.verseEnd && parsed.verseEnd !== parsed.verse ? parsed.verseEnd : null;
+    const isRange = verseEnd !== null;
+
+    if (direction > 0) {
+      if (isRange) {
+        // Ranges stay within the chapter; slide the whole span
+        if (verseEnd >= versesIn(chapter)) return;
+        verse += 1;
+      } else if (verse < versesIn(chapter)) {
+        verse += 1;
+      } else if (chapter < book.chapters) {
+        // Roll into the next chapter
+        chapter += 1;
+        verse = 1;
+      } else {
+        return; // End of book
+      }
+    } else {
+      if (isRange) {
+        if (verse <= 1) return;
+        verse -= 1;
+      } else if (verse > 1) {
+        verse -= 1;
+      } else if (chapter > 1) {
+        // Roll back into the previous chapter
+        chapter -= 1;
+        verse = versesIn(chapter);
+      } else {
+        return; // Start of book
+      }
+    }
+
+    const verseRef = buildVerseRef(book.name, chapter, verse, isRange ? verseEnd : null);
+    saveRecentVerse(verseRef);
+
+    const verseRefDb = ref(realtimeDb, 'bibleVerse');
+    set(verseRefDb, verseRef);
+
+    const displayModeRef = ref(realtimeDb, 'displayMode');
+    set(displayModeRef, 'verse');
+  };
+
   // Smart search with fuzzy matching
   const fuzzyMatch = (str, pattern) => {
     const strLower = str.toLowerCase();
@@ -273,13 +333,14 @@ const BibleVerseScreen = ({ onClose }) => {
     return 0;
   };
 
-  // Parse full verse reference (e.g., "Genesis 1:1" or "John 3:16")
+  // Parse full verse reference (e.g., "Genesis 1:1", "John 3:16" or "Genesis 1:10-20")
   const parseVerseReference = (query) => {
-    const match = query.match(/^(.+?)\s+(\d+)(?::(\d+))?$/);
+    const match = query.match(/^(.+?)\s+(\d+)\s*(?::\s*(\d+)\s*(?:[-–—]\s*(\d+))?)?$/);
     if (match) {
       const bookName = match[1].trim();
       const chapterNum = parseInt(match[2]);
       const verseNum = match[3] ? parseInt(match[3]) : null;
+      const verseEndNum = match[4] ? parseInt(match[4]) : null;
 
       // Find matching book with fuzzy search
       const results = BIBLE_STRUCTURE
@@ -292,10 +353,22 @@ const BibleVerseScreen = ({ onClose }) => {
 
       if (results.length > 0) {
         const book = results[0].book;
-        return { book, chapter: chapterNum, verse: verseNum };
+        // Normalize reversed ranges (e.g., "Genesis 1:20-10")
+        if (verseNum !== null && verseEndNum !== null && verseEndNum < verseNum) {
+          return { book, chapter: chapterNum, verse: verseEndNum, verseEnd: verseNum };
+        }
+        return { book, chapter: chapterNum, verse: verseNum, verseEnd: verseEndNum };
       }
     }
     return null;
+  };
+
+  // Build a normalized reference string, e.g. "Genesis 1: 10" or "Genesis 1: 10 - 20"
+  const buildVerseRef = (bookName, chapterNum, verseStart, verseEnd) => {
+    const versePart = verseEnd && verseEnd !== verseStart
+      ? `${verseStart} - ${verseEnd}`
+      : `${verseStart}`;
+    return `${bookName} ${chapterNum}: ${versePart}`;
   };
 
   useEffect(() => {
@@ -333,6 +406,7 @@ const BibleVerseScreen = ({ onClose }) => {
     setSelectedBook(book);
     setSelectedChapter(null);
     setSelectedVerse(null);
+    setRangeEndVerse(null);
     setSearchQuery('');
     setShowSuggestions(false);
 
@@ -347,9 +421,13 @@ const BibleVerseScreen = ({ onClose }) => {
       if (e.key === 'Enter') {
         const parsed = parseVerseReference(searchQuery);
         if (parsed) {
+          const rangeEnd = parsed.verseEnd && parsed.verseEnd !== parsed.verse
+            ? parsed.verseEnd
+            : null;
           setSelectedBook(parsed.book);
           setSelectedChapter(parsed.chapter);
           setSelectedVerse(parsed.verse);
+          setRangeEndVerse(rangeEnd);
           setSearchQuery('');
 
           // Switch to correct testament
@@ -358,7 +436,7 @@ const BibleVerseScreen = ({ onClose }) => {
 
           // If Shift+Enter, also set the verse to Firebase
           if (e.shiftKey && parsed.chapter && parsed.verse) {
-            const verseRef = `${parsed.book.name} ${parsed.chapter}:${parsed.verse}`;
+            const verseRef = buildVerseRef(parsed.book.name, parsed.chapter, parsed.verse, rangeEnd);
             saveRecentVerse(verseRef);
 
             // Save to Firebase
@@ -429,7 +507,7 @@ const BibleVerseScreen = ({ onClose }) => {
             ref={searchInputRef}
             type="text"
             className="bible-search-box"
-            placeholder="Search books (e.g., Genesis, John, Psalms...)"
+            placeholder="Search books or verse — e.g., Genesis 1:10-20"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             onFocus={() => searchQuery && setShowSuggestions(true)}
@@ -509,6 +587,7 @@ const BibleVerseScreen = ({ onClose }) => {
 
           {/* Verses Grid */}
           <div className="grid-section">
+            <div className="grid-hint">Click a verse, then Alt+click another to select a range</div>
             <div className="numbers-grid-container">
               {!selectedBook ? (
                 <div className="grid-empty-state"></div>
@@ -522,8 +601,14 @@ const BibleVerseScreen = ({ onClose }) => {
                   ).map((num) => (
                     <div
                       key={num}
-                      className={`number-box ${selectedVerse === num ? 'selected' : ''}`}
-                      onClick={() => handleVerseClick(num)}
+                      className={`number-box ${
+                        selectedVerse !== null &&
+                        num >= selectedVerse &&
+                        num <= (rangeEndVerse ?? selectedVerse)
+                          ? 'selected'
+                          : ''
+                      }`}
+                      onClick={(e) => handleVerseClick(num, e)}
                     >
                       {num}
                     </div>
@@ -541,7 +626,7 @@ const BibleVerseScreen = ({ onClose }) => {
             <div className="section-label">Selected</div>
             {hasSelectedVerse ? (
               <div className="verse-preview">
-                {selectedBook.name} {selectedChapter}:{selectedVerse}
+                {buildVerseRef(selectedBook.name, selectedChapter, selectedVerse, rangeEndVerse)}
               </div>
             ) : (
               <div className="verse-preview empty">Select a verse</div>
@@ -554,11 +639,27 @@ const BibleVerseScreen = ({ onClose }) => {
           <div className="display-section">
             <div className="section-label">Current Display</div>
             {currentSetVerse ? (
-              <div className="verse-current">
-                {currentSetVerse}
-                {showSetConfirmation && (
-                  <div className="success-badge">✓ Updated</div>
-                )}
+              <div className="verse-current-row">
+                <button
+                  className="verse-step-btn"
+                  onClick={() => stepVerse(-1)}
+                  title="Previous verse"
+                >
+                  ‹
+                </button>
+                <div className="verse-current">
+                  {currentSetVerse}
+                  {showSetConfirmation && (
+                    <div className="success-badge">✓ Updated</div>
+                  )}
+                </div>
+                <button
+                  className="verse-step-btn"
+                  onClick={() => stepVerse(1)}
+                  title="Next verse"
+                >
+                  ›
+                </button>
               </div>
             ) : (
               <div className="verse-current empty">No verse set</div>
